@@ -1,74 +1,110 @@
 import java.awt.*;
+import java.nio.file.OpenOption;
 import java.util.*;
-import java.util.List;
+
 
 
 public class Player150402149 extends GomokuPlayer{
-    public final int MAXDEPTH = 2;
-    public  final int[][][] leftToRightDiag = {{{0,3},{1,4},{2,5},{3,6},{4,7}},
-            {{0,2},{1,3},{2,4},{3,5},{4,6},{5,7}},
-            {{0,1},{1,2},{2,3},{3,4},{4,5},{5,6},{6,7}},
-            {{0,0},{1,1},{2,2},{3,3},{4,4},{5,5},{6,6},{7,7}},
-            {{1,0},{2,1},{3,2},{4,3},{5,4},{6,5},{7,6}},
-            {{2,0},{3,1},{4,2},{5,3},{6,4},{7,5}},
-            {{3,0},{4,1},{5,2},{6,3},{7,4}}};
-    public final int[][][] rightToLeftDiag = {{{0,4},{1,3},{2,2},{3,1},{4,0}},
-            {{0,5},{1,4},{2,3},{3,2},{4,1},{5,0}},
-            {{0,6},{1,5},{2,4},{3,3},{4,2},{5,1},{6,0}},
-            {{0,7},{1,6},{2,5},{3,4},{4,3},{5,2},{6,1},{7,0}},
-            {{1,7},{2,6},{3,5},{4,4},{4,3},{5,2},{6,1}},
-            {{2,7},{3,6},{4,5},{5,4},{6,3},{7,2}},
-            {{3,7},{4,6},{5,5},{6,4},{7,3}}};
+    public final int MAXDEPTH = 5;
+    public  int UTILITY = 2;
+    private int finalStatesVisited;
+    private int statesVisited;
+    public  final int[][][] leftToRightDiag =
+            {{{0,3},{1,4},{2,5},{3,6},{4,7}},
+             {{0,2},{1,3},{2,4},{3,5},{4,6},{5,7}},
+             {{0,1},{1,2},{2,3},{3,4},{4,5},{5,6},{6,7}},
+             {{0,0},{1,1},{2,2},{3,3},{4,4},{5,5},{6,6},{7,7}},
+             {{1,0},{2,1},{3,2},{4,3},{5,4},{6,5},{7,6}},
+             {{2,0},{3,1},{4,2},{5,3},{6,4},{7,5}},
+             {{3,0},{4,1},{5,2},{6,3},{7,4}}};
+    public final int[][][] rightToLeftDiag =
+            {{{0,4},{1,3},{2,2},{3,1},{4,0}},
+             {{0,5},{1,4},{2,3},{3,2},{4,1},{5,0}},
+             {{0,6},{1,5},{2,4},{3,3},{4,2},{5,1},{6,0}},
+             {{0,7},{1,6},{2,5},{3,4},{4,3},{5,2},{6,1},{7,0}},
+             {{1,7},{2,6},{3,5},{4,4},{4,3},{5,2},{6,1}},
+             {{2,7},{3,6},{4,5},{5,4},{6,3},{7,2}},
+             {{3,7},{4,6},{5,5},{6,4},{7,3}}};
     public int[] DiagSize = {5, 6, 7, 8, 7, 6, 5};
+
+    public final int[][] AvaliableActionHeuristic = {{3,3},{3,4},{4,3},{4,4},{2,3},{2,4},{3,2},{3,5},
+                                                    {4,2},{4,5},{5,3},{5,4},{2,2},{2,5},{5,2},{5,5},
+                                                    {1,3},{1,4},{3,1},{3,6},{4,1},{4,6},{6,3},{6,4},
+                                                    {2,1},{1,2},{1,5},{2,6},{5,1},{6,2},{5,6},{6,5},
+                                                    {1,1},{1,6},{6,1},{6,6},{0,1},{0,2},{0,3},{0,4},
+                                                    {0,5},{0,6},{1,0},{2,0},{3,0},{4,0},{5,0},{6,0},
+                                                    {1,7},{2,7},{3,7},{4,7},{5,7},{6,7},{7,1},{7,2},
+                                                    {7,3},{7,4},{7,5},{7,6},{0,0},{0,7},{7,0},{7,7}};
 
 
     public Move chooseMove(Color[][] board, Color me) {
-        Integer[] MiniMaxResult = AlphaBetaMaxPlayer(board, Integer.MIN_VALUE, Integer.MAX_VALUE, MAXDEPTH, me);
-        return new Move(MiniMaxResult[0],MiniMaxResult[1]);
+        finalStatesVisited = 0;
+        statesVisited = 0;
+        try {
+            Integer[] MiniMaxResult = AlphaBetaMaxPlayer(board, Integer.MIN_VALUE, Integer.MAX_VALUE, MAXDEPTH, me);
+            System.out.println(me.toString() + MiniMaxResult[0]+","+MiniMaxResult[1]);
+            //System.out.println("Total Visited:" + finalStatesVisited);
+            return new Move(MiniMaxResult[0],MiniMaxResult[1]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Integer[] AlphaBetaMaxPlayer(Color[][] state, int min, int max, int depth, Color player){
+        finalStatesVisited++;
         Color nextPlayerColor = nextPlayer(player);
-        ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
-        Collections.shuffle(actionsAvailable);
 
-        if(CutOffTest(state, player, depth)){
-            Integer[] returned =  {null,null,utilityFunctionMax(state, actionsAvailable)};
+        ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
+        //System.out.println("Number of Actions" + actionsAvailable.size());
+
+        if (CutOffTest(state, player, depth, actionsAvailable)) {
+            Integer[] returned = utilityFunctionMax(state, actionsAvailable, player);
+            System.out.println(returned[UTILITY]);
             return returned;
         }
-        Integer[] best = new Integer[3]; // [x,y,Utility]
+        Integer[] best = new Integer[]{null, null, Integer.MIN_VALUE}; // [x,y,Utility]
         Integer[] actionAndReturnedUtility = new Integer[3];
-        for(int i = 0 ; i < actionsAvailable.size(); i++){
-            actionAndReturnedUtility = AlphaBetaMinPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min , max , depth - 1 , nextPlayerColor );
-             if(actionAndReturnedUtility[2] > best[2]){
-                best = actionAndReturnedUtility;
-             }else if(actionAndReturnedUtility[2] >= max){
-                 return new Integer[]{null, null, actionAndReturnedUtility[2]};
-             }else if(actionAndReturnedUtility[2] > min){
-                min = actionAndReturnedUtility[2];
-             }
+
+        for (int i = 0; i < actionsAvailable.size(); i++) {
+            actionAndReturnedUtility = AlphaBetaMinPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min, max, depth - 1, nextPlayerColor);
+            if (actionAndReturnedUtility[UTILITY] > best[2]) {
+                best = new Integer[]{actionsAvailable.get(i)[0],actionsAvailable.get(i)[1], actionAndReturnedUtility[UTILITY]};
+            }
+            if (actionAndReturnedUtility[UTILITY] >= max) {
+                return new Integer[]{null, null, actionAndReturnedUtility[UTILITY]};
+            }
+            if (actionAndReturnedUtility[UTILITY] > min) {
+                min = actionAndReturnedUtility[UTILITY];
+            }
         }
         return best;
     }
-    public Integer[] AlphaBetaMinPlayer(Color[][] state, int min, int max,int depth, Color player){
+    public Integer[] AlphaBetaMinPlayer(Color[][] state, int min, int max,int depth, Color player) {
+        finalStatesVisited++;
+
         Color nextPlayerColor = nextPlayer(player);
         ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
-        Collections.shuffle(actionsAvailable);
+        //System.out.println("Min" + actionsAvailable.size());
 
-        if(CutOffTest(state, player, depth)){
-            Integer[] returned =  {null,null,utilityFunctionMin(state, actionsAvailable)};
+        if (CutOffTest(state, player, depth, actionsAvailable)) {
+            Integer[] returned = utilityFunctionMin(state, actionsAvailable, player);
+            //System.out.println(returned[UTILITY]);
             return returned;
         }
-        Integer[] best = new Integer[3]; // [x,y,Utility]
+        Integer[] best = new Integer[]{null, null, Integer.MAX_VALUE}; // [x,y,Utility]
         Integer[] actionAndReturnedUtility = new Integer[3];
-        for(int i = 0 ; i < actionsAvailable.size(); i++){
-            actionAndReturnedUtility = AlphaBetaMaxPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min , max , depth - 1 , nextPlayerColor );
-            if(actionAndReturnedUtility[2] < best[2]){
-                best = actionAndReturnedUtility;
-            }else if(actionAndReturnedUtility[2] <= min){
-                return new Integer[]{null,null,actionAndReturnedUtility[2]};
-            }else if(actionAndReturnedUtility[2] < max){
-                max = actionAndReturnedUtility[2];
+
+        for (int i = 0; i < actionsAvailable.size(); i++) {
+            actionAndReturnedUtility = AlphaBetaMaxPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min, max, depth - 1, nextPlayerColor);
+            if (actionAndReturnedUtility[UTILITY] < best[2]) {
+                best = new Integer[]{actionsAvailable.get(i)[0],actionsAvailable.get(i)[1], actionAndReturnedUtility[UTILITY]};
+            }
+            if (actionAndReturnedUtility[UTILITY] <= min) {
+                return new Integer[]{null, null, actionAndReturnedUtility[UTILITY]};
+            }
+            if (actionAndReturnedUtility[UTILITY] < max) {
+                max = actionAndReturnedUtility[UTILITY];
             }
         }
         return best;
@@ -76,35 +112,49 @@ public class Player150402149 extends GomokuPlayer{
 
     public ArrayList<Integer[]> populateAvailableActions(Color[][] state){
         ArrayList<Integer[]> moves = new ArrayList<Integer[]>();
-        for(int i = 0 ; i < 7 ; i++){
-            for(int j = 0 ; j < 7 ; j++){
-                if(state[i][j] == null){
-                    moves.add(new Integer[]{i,j,null});
-                }
+        for(int i = 0 ; i < AvaliableActionHeuristic.length ; i++){
+            if(state[AvaliableActionHeuristic[i][0]][AvaliableActionHeuristic[i][1]] == null){
+                moves.add(new Integer[]{AvaliableActionHeuristic[i][0],AvaliableActionHeuristic[i][1]});
             }
         }
         return moves;
     }
 
-    public boolean CutOffTest(Color[][] state, Color player, int depth){  //terminal or max depth
-        if(depth == 0){
-            return true;
-        }
-        int count1 = 0;
-        int count2 = 0;
-        for(int i = 0 ; i < 8 ; i++ ){ //the verticle and horizontal
-            for(int j = 0 ; j < 8 ; j++){
-                if(state[i][j].equals(player)){
-                    count1++;
+    public boolean CutOffTest(Color[][] state, Color player, int depth, ArrayList<Integer[]> a){  //terminal or max depth
+
+
+    if(depth == 0 || a.size()==64){
+        return true;
+    }
+    if(a.size()==63){
+
+    }
+    int count1 = 0;
+    int count2 = 0;
+
+        for (int i = 0; i < 8; i++) { //the verticle and horizontal
+            for (int j = 0; j < 8; j++) {
+                if(state[i][j] != null) {
+                    if (state[i][j].equals(player)) {
+                        count1++;
+                    } else {
+                        count1 = 0;
+                    }
                 }else{
                     count1 = 0;
                 }
-                if(state[j][i].equals(player)){
-                    count2++;
+
+                if(state[j][i] != null) {
+                    if(state[j][i].equals(player)) {
+                        count2++;
+                    } else {
+                        count2 = 0;
+                    }
                 }else{
                     count2 = 0;
                 }
-                if(count1 == 5 || count2 == 5){
+
+                if (count1 == 5 || count2 == 5) {
                     return true;
                 }
             }
@@ -112,19 +162,29 @@ public class Player150402149 extends GomokuPlayer{
         int y = 0;
         count1 = 0;
         count2 = 0;
-        for(int x = 0 ; x < 7 ; x++){ //the diagonals
-            for(y = 0 ; y < DiagSize[x] ; y++){
-                if(state[leftToRightDiag[x][y][0]][leftToRightDiag[x][y][1]].equals(player)){
-                    count1++;
+        for (int x = 0; x < 7; x++) { //the diagonals
+            for (y = 0; y < DiagSize[x]; y++) {
+                if (state[leftToRightDiag[x][y][0]][leftToRightDiag[x][y][1]] != null ) {
+                    if (state[leftToRightDiag[x][y][0]][leftToRightDiag[x][y][1]].equals(player)) {
+                        count1++;
+                    } else {
+                        count1 = 0;
+                    }
                 }else{
                     count1 = 0;
                 }
-                if(state[rightToLeftDiag[x][y][0]][rightToLeftDiag[x][y][1]].equals(player)){
-                    count2++;
+
+                if(state[rightToLeftDiag[x][y][0]][rightToLeftDiag[x][y][1]] != null) {
+                    if (state[rightToLeftDiag[x][y][0]][rightToLeftDiag[x][y][1]].equals(player)) {
+                        count2++;
+                    } else {
+                        count2 = 0;
+                    }
                 }else{
                     count2 = 0;
                 }
-                if(count1 == 5 || count2 == 5){
+
+                if (count1 == 5 || count2 == 5) {
                     return true;
                 }
             }
@@ -132,24 +192,176 @@ public class Player150402149 extends GomokuPlayer{
         return false;
     }
 
-    public int utilityFunctionMax(Color[][] state, ArrayList<Integer[]> a){
+    public Integer[] utilityFunctionMax(Color[][] state, ArrayList<Integer[]> a, Color me){
         if(a.size() == 64){
-
+            return new Integer[]{3,3,Integer.MAX_VALUE};
         }
+        int[] bestSoFar = new int[]{0,0,0}; //[x,y,lengthOfBest,nullbefore,nullafter]
+        int[] worstSoFar = new int[]{0,0,0};
 
-        return new Random().nextInt();
+        int potential5 = 0;
+        int enemyPotential5 = 0;
+        int potential5AltDir = 0;
+        int enemyPotential5AltDir = 0;
+        int nullBefore = 0;
+        int nullAfter = 0;
+
+        for(int i = 0 ; i < 8; i++){
+            for(int j = 0 ; j < 8 ; j++){
+                if(state[i][j] == null){
+                        nullBefore++;
+                }else if(state[i][j].equals(me)){
+                    potential5++;
+                    enemyPotential5 = 0;
+                }else{
+                    enemyPotential5++;
+                    potential5 = 0;
+                }
+                if(enemyPotential5 == 5){
+                    return new Integer[]{i,j,100000};
+                }
+                if(potential5 == 5){
+                    return new Integer[]{i,j,100000};
+                }
+
+                if(state[j][i] == null){
+                    nullBefore++;
+                }else if(state[j][i].equals(me)){
+                    potential5AltDir++;
+                    enemyPotential5AltDir = 0;
+                }else{
+                    enemyPotential5AltDir++;
+                    potential5AltDir = 0;
+                }
+                if(enemyPotential5AltDir == 5){
+                    return new Integer[]{j,i,100000};
+                }
+                if(potential5AltDir == 5){
+                    return new Integer[]{j,i,100000};
+                }
+            }
+        }
+        return new Integer[]{0,0,0};
     }
 
-    public int utilityFunctionMin(Color[][] state, ArrayList<Integer[]> a){
-        return new Random().nextInt();
+    public Integer[] utilityFunctionMin(Color[][] state, ArrayList<Integer[]> a, Color me){
+
+        int potential5 = 0;
+        int enemyPotential5 = 0;
+        int potential5AltDir = 0;
+        int enemyPotential5AltDir = 0;
+        int nullGapCount = 0;
+        int[] bestSoFar = new int[]{0,0,0,0};
+        int[] worstSoFar = new int[]{0,0,0,0};
+
+        for(int i = 0 ; i < 8; i++){
+            for(int j = 0 ; j < 8 ; j++){
+                if(state[i][j] == null){
+                    nullGapCount++;
+                }else if(state[i][j].equals(me)){
+                    potential5++;
+                    enemyPotential5 = 0;
+                }else{
+                    enemyPotential5++;
+                    potential5 = 0;
+                }
+                if(enemyPotential5 == 5){
+                    return new Integer[]{i,j,-100000};
+                }
+                if(potential5 == 5){
+                    return new Integer[]{i,j,-100000};
+                }
+                if(state[j][i] == null){
+                    nullGapCount++;
+                }else if(state[j][i].equals(me)){
+                    potential5AltDir++;
+                    enemyPotential5AltDir = 0;
+                }else{
+                    enemyPotential5AltDir++;
+                    potential5AltDir = 0;
+                }
+                if(enemyPotential5AltDir == 5){
+                    return new Integer[]{j,i,-100};
+                }
+                if(potential5AltDir == 5){
+                    return new Integer[]{j,i,-100};
+                }
+            }
+        }
+        return new Integer[]{0,0,0};
+    }
+    public int huristicScoreMax(int runLength, int openEnds){
+        if(runLength > 5){
+            runLength = 5;
+        }else if(openEnds == 0){
+            return 0;
+        }
+        switch(runLength){
+            case 5:
+                switch(openEnds){
+                    case 1:
+                        return Integer.MAX_VALUE;
+                    case 2:
+                        return Integer.MAX_VALUE;
+                }
+            case 4:
+                switch(openEnds){
+                    case 1:
+                        return 10000;
+                    case 2:
+                        return 100000;
+                }
+            case 3:
+                switch(openEnds){
+                    case 1:
+                        return 8;
+                    case 2:
+                        return 100;
+                }
+            case 2:
+                switch(openEnds){
+                    case 1:
+                        return 4;
+                    case 2:
+                        return 7;
+                }
+            case 1:
+                switch(openEnds){
+                    case 1:
+                        return 1;
+                    case 2:
+                        return 2;
+                }
+        }
+        return 0;
     }
 
     public int bestblock(Color[][] state, ArrayList<Integer[]> options){
         return 1;
     }
 
+    public int pow (int a, int b)
+    {
+        if ( b == 0)        return 1;
+        if ( b == 1)        return a;
+        if (isEven( b ))    return     pow ( a * a, b/2); //even a=(a^2)^b/2
+        else                return a * pow ( a * a, b/2); //odd  a=a*(a^2)^b/2
+    }
+
+    public boolean isEven(int a){
+        if(a%2 == 0){
+            return true;
+        }
+        return false;
+    }
+
     public Color[][] makeMove(Color[][] state, Integer[] move, Color player){
-        Color[][] newState = state;
+        Color[][] newState = new Color[8][8];
+        for(int i = 0 ; i < 8 ; i++){
+            for(int j = 0 ; j < 8 ; j++){
+                newState[i][j] = state[i][j];
+            }
+        }
         newState[move[0]][move[1]] = player;
         return newState;
     }
