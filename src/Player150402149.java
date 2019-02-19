@@ -206,10 +206,11 @@ public class Player150402149 extends GomokuPlayer{
         int nullBefore = 0;
         int nullAfter = 0;
 
-        for(int i = 0 ; i < 8; i++){
+
+        return new Integer[]{0,0,0};for(int i = 0 ; i < 8; i++){
             for(int j = 0 ; j < 8 ; j++){
                 if(state[i][j] == null){
-                        nullBefore++;
+                    nullBefore++;
                 }else if(state[i][j].equals(me)){
                     potential5++;
                     enemyPotential5 = 0;
@@ -241,7 +242,6 @@ public class Player150402149 extends GomokuPlayer{
                 }
             }
         }
-        return new Integer[]{0,0,0};
     }
 
     public Integer[] utilityFunctionMin(Color[][] state, ArrayList<Integer[]> a, Color me){
@@ -309,7 +309,7 @@ public class Player150402149 extends GomokuPlayer{
                     case 1:
                         return 10000;
                     case 2:
-                        return 100000;
+                        return 1000000;
                 }
             case 3:
                 switch(openEnds){
@@ -334,25 +334,6 @@ public class Player150402149 extends GomokuPlayer{
                 }
         }
         return 0;
-    }
-
-    public int bestblock(Color[][] state, ArrayList<Integer[]> options){
-        return 1;
-    }
-
-    public int pow (int a, int b)
-    {
-        if ( b == 0)        return 1;
-        if ( b == 1)        return a;
-        if (isEven( b ))    return     pow ( a * a, b/2); //even a=(a^2)^b/2
-        else                return a * pow ( a * a, b/2); //odd  a=a*(a^2)^b/2
-    }
-
-    public boolean isEven(int a){
-        if(a%2 == 0){
-            return true;
-        }
-        return false;
     }
 
     public Color[][] makeMove(Color[][] state, Integer[] move, Color player){
