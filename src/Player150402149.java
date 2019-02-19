@@ -2,10 +2,11 @@ import java.awt.*;
 import java.nio.file.OpenOption;
 import java.util.*;
 
+import static java.util.Collections.shuffle;
 
 
 public class Player150402149 extends GomokuPlayer{
-    public final int MAXDEPTH = 5;
+    public  int MAXDEPTH = 3;
     public  int UTILITY = 2;
     private int finalStatesVisited;
     private int statesVisited;
@@ -27,7 +28,7 @@ public class Player150402149 extends GomokuPlayer{
              {{3,7},{4,6},{5,5},{6,4},{7,3}}};
     public int[] DiagSize = {5, 6, 7, 8, 7, 6, 5};
 
-    /*
+
     public final int[][] AvaliableActionHeuristic = {{3,3},{3,4},{4,3},{4,4},{2,3},{2,4},{3,2},{3,5},
                                                     {4,2},{4,5},{5,3},{5,4},{2,2},{2,5},{5,2},{5,5},
                                                     {1,3},{1,4},{3,1},{3,6},{4,1},{4,6},{6,3},{6,4},
@@ -36,7 +37,6 @@ public class Player150402149 extends GomokuPlayer{
                                                     {0,5},{0,6},{1,0},{2,0},{3,0},{4,0},{5,0},{6,0},
                                                     {1,7},{2,7},{3,7},{4,7},{5,7},{6,7},{7,1},{7,2},
                                                     {7,3},{7,4},{7,5},{7,6},{0,0},{0,7},{7,0},{7,7}};
-    */
 
     public Move chooseMove(Color[][] board, Color me) {
         finalStatesVisited = 0;
@@ -45,6 +45,12 @@ public class Player150402149 extends GomokuPlayer{
             Integer[] MiniMaxResult = AlphaBetaMaxPlayer(board, Integer.MIN_VALUE, Integer.MAX_VALUE, MAXDEPTH, me);
             System.out.println(me.toString() + MiniMaxResult[0]+","+MiniMaxResult[1]+","+MiniMaxResult[2]);
             //System.out.println("Total Visited:" + finalStatesVisited);
+
+            if(MiniMaxResult[0] == null || MiniMaxResult[1] == null){
+                ArrayList<Integer[]> actions = populateActions(board);
+                shuffle(actions);
+                return(new Move(actions.get(0)[0], actions.get(0)[1]));
+            }
             return new Move(MiniMaxResult[0],MiniMaxResult[1]);
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,11 +59,16 @@ public class Player150402149 extends GomokuPlayer{
     }
 
     public Integer[] AlphaBetaMaxPlayer(Color[][] state, int min, int max, int depth, Color player){
-        finalStatesVisited++;
+
         Color nextPlayerColor = nextPlayer(player);
 
         ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
-        //System.out.println("Number of Actions" + actionsAvailable.size());
+        //shuffle(actionsAvailable);
+
+
+        if(actionsAvailable.size() < 56){
+            MAXDEPTH = 5;
+        }
 
         if (CutOffTest(state, player, depth, actionsAvailable)) {
             Integer[] returned = utilityFunctionMax(state, actionsAvailable, player, depth);
@@ -85,6 +96,7 @@ public class Player150402149 extends GomokuPlayer{
 
         Color nextPlayerColor = nextPlayer(player);
         ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
+        //shuffle(actionsAvailable);
 
         if (CutOffTest(state, player, depth, actionsAvailable)) {
             
@@ -96,7 +108,7 @@ public class Player150402149 extends GomokuPlayer{
 
         for (int i = 0; i < actionsAvailable.size(); i++) {
             value = AlphaBetaMaxPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min, max, depth - 1, nextPlayerColor);
-            if (value[UTILITY] < best[2]) {
+            if (value[UTILITY] < best[UTILITY]) {
                 best = new Integer[]{actionsAvailable.get(i)[0],actionsAvailable.get(i)[1], value[UTILITY]};
             }
             if (value[UTILITY] <= min) {
@@ -110,15 +122,17 @@ public class Player150402149 extends GomokuPlayer{
     }
 
     public ArrayList<Integer[]> populateAvailableActions(Color[][] state) {
-        /*
         ArrayList<Integer[]> moves = new ArrayList<Integer[]>();
-        for(int i = 0 ; i < AvaliableActionHeuristic.length ; i++){
-            if(state[AvaliableActionHeuristic[i][0]][AvaliableActionHeuristic[i][1]] == null){
-                moves.add(new Integer[]{AvaliableActionHeuristic[i][0],AvaliableActionHeuristic[i][1]});
+        for (int i = 0; i < AvaliableActionHeuristic.length; i++) {
+            if (state[AvaliableActionHeuristic[i][0]][AvaliableActionHeuristic[i][1]] == null) {
+                moves.add(new Integer[]{AvaliableActionHeuristic[i][0], AvaliableActionHeuristic[i][1]});
             }
         }
         return moves;
-        */
+    }
+
+    public ArrayList<Integer[]> populateActions(Color[][] state){
+
         ArrayList<Integer[]> moves = new ArrayList<Integer[]>();
         for (int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++ ){
@@ -164,6 +178,7 @@ public class Player150402149 extends GomokuPlayer{
                 }
 
                 if (count1 == 5 || count2 == 5) {
+                    //System.out.println("found final h or z");
                     return true;
                 }
             }
@@ -194,6 +209,7 @@ public class Player150402149 extends GomokuPlayer{
                 }
 
                 if (count1 == 5 || count2 == 5) {
+                    //System.out.println("Found final diag");
                     return true;
                 }
             }
@@ -226,86 +242,72 @@ public class Player150402149 extends GomokuPlayer{
 
         return new Integer[]{null,null,score};
     }
+
     public int huristicScore(int runLength, int openEnds, boolean isMax, Color runColor, Color me, boolean currentTurn){
-        if(runLength > 4){
-            runLength = 4;
-        }else if(openEnds == 0){
+        if(runLength <= 0){
             return 0;
-        }else if(openEnds >2){
+        }
+        if(runLength > 5){
+            runLength = 5;
+        }else if(openEnds < 1){
+            return 0;
+        }else if(openEnds > 2){
             openEnds = 2;
         }
+
+
         int score = 0;
         switch(runLength){
-            /*
-            case 5:
-                switch(openEnds){
-                    case 1:
-                        score =  Integer.MAX_VALUE/2;
-                        break;
-                    case 2:
-                        score =  Integer.MAX_VALUE/2;
-                }
-                break;
-                */
             case 4:
-                switch(openEnds){
-                    case 1:
-                        if(currentTurn){
-                            score =  500000;
-                        }else{
-                            score = 5000;
-                        }
-                        break;
-                    case 2:
-                        if(currentTurn) {
-                            score = 50000000;
-                        }else{
+                if(isMax) {
+                    switch (openEnds) {
+                        case 1:
                             score = 50000;
-                        }
-                        break;
+                            break;
+                        case 2:
+                            score = 500000;
+                            break;
+                    }
+                }else{
+                    switch (openEnds){
+                        case 1:
+                            score = 100000;
+                            break;
+                        case 2:
+                            score = 1000000;
+                    }
                 }
                 break;
             case 3:
                 switch(openEnds){
-                    case 1:
-                        score =  100;
+                    case 1: score =  300;
                         break;
-                    case 2:
-                        score =  5000;
+                    case 2: score =  5000;
                         break;
                 }
                 break;
             case 2:
                 switch(openEnds){
-                    case 1:
-                        score =  4;
+                    case 1: score =  5;
                         break;
-                    case 2:
-                        score =  10;
+                    case 2: score =  20;
                         break;
                 }
                 break;
             case 1:
                 switch(openEnds){
-                    case 1:
-                        score =  1;
+                    case 1: score =  1;
                         break;
-                    case 2:
-                        score =  1;
+                    case 2: score =  2;
                         break;
                 }
                 break;
-            default: return 0;
-    }
+            default: score = Integer.MAX_VALUE -1;
+                break;
+        }
         if(isMax){
-            if(score > 10000){
-                System.out.println(score);
-            }
             return score;
         }else{
-            if(score > 10000){
-                System.out.println(score*-1);
-            }
             return score*-1;
         }
     }
@@ -326,7 +328,7 @@ public class Player150402149 extends GomokuPlayer{
                 if(state[i][j] == null){
                     if(runLength > 0){
                         nullAfter++;
-                        score = huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
+                        score = score + huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
                         runLength = 0;
                         nullBefore = nullAfter;
                         nullAfter = 0;
@@ -339,14 +341,14 @@ public class Player150402149 extends GomokuPlayer{
                 }else if(state[i][j].equals(runColor)){
                     runLength++;
                 }else if(state[i][j].equals(nextPlayer(runColor))){
-                    score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                    score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
                     runLength = 1;
                     nullBefore = 0;
                     runColor = nextPlayer(runColor);
                 }
             }
             if(runLength > 0){
-                score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
             }
             runLength=0;
             nullAfter = 0;
@@ -370,7 +372,7 @@ public class Player150402149 extends GomokuPlayer{
                 if(state[j][i] == null){
                     if(runLength > 0){
                         nullAfter++;
-                        score = huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
+                        score = score + huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
                         runLength = 0;
                         nullBefore = nullAfter;
                         nullAfter = 0;
@@ -383,14 +385,14 @@ public class Player150402149 extends GomokuPlayer{
                 }else if(state[j][i].equals(runColor)){
                     runLength++;
                 }else{
-                    score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                    score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
                     runLength = 1;
                     nullBefore = 0;
                     runColor = nextPlayer(runColor);
                 }
             }
             if(runLength > 0){
-                score = huristicScore(runLength, nullBefore, isMax, runColor, me,currentTurn);
+                score = score + huristicScore(runLength, nullBefore, isMax, runColor, me,currentTurn);
             }
             runLength=0;
             nullAfter = 0;
@@ -415,11 +417,11 @@ public class Player150402149 extends GomokuPlayer{
                 if(state[leftToRightDiag[i][j][0]][leftToRightDiag[i][j][1]] == null){
                     if(runLength > 0){
                         nullAfter++;
-                        score = huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
+                        score = score + huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
                         runLength = 0;
                         nullBefore = nullAfter;
                         nullAfter = 0;
-                    }else if(nullBefore >1){
+                    }else if(nullBefore > 1){
                         nullBefore =1;
                         nullAfter = 0;
                     }else{
@@ -428,14 +430,14 @@ public class Player150402149 extends GomokuPlayer{
                 }else if(state[leftToRightDiag[i][j][0]][leftToRightDiag[i][j][1]].equals(runColor)){
                     runLength++;
                 }else if(state[leftToRightDiag[i][j][0]][leftToRightDiag[i][j][1]].equals(nextPlayer(runColor))){
-                    score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                    score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
                     runLength = 1;
                     nullBefore = 0;
                     runColor = nextPlayer(runColor);
                 }
             }
             if(runLength > 0){
-                score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
             }
             runLength=0;
             nullAfter = 0;
@@ -459,7 +461,7 @@ public class Player150402149 extends GomokuPlayer{
                 if(state[rightToLeftDiag[i][j][0]][rightToLeftDiag[i][j][1]] == null){
                     if(runLength > 0){
                         nullAfter++;
-                        score = huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
+                        score = score + huristicScore(runLength, nullAfter+nullBefore, isMax, runColor, me, currentTurn);
                         runLength = 0;
                         nullBefore = nullAfter;
                         nullAfter = 0;
@@ -472,14 +474,14 @@ public class Player150402149 extends GomokuPlayer{
                 }else if(state[rightToLeftDiag[i][j][0]][rightToLeftDiag[i][j][1]].equals(runColor)){
                     runLength++;
                 }else if(state[rightToLeftDiag[i][j][0]][rightToLeftDiag[i][j][1]].equals(nextPlayer(runColor))){
-                    score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                    score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
                     runLength = 1;
                     nullBefore = 0;
                     runColor = nextPlayer(runColor);
                 }
             }
             if(runLength > 0){
-                score = huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
+                score = score + huristicScore(runLength, nullBefore, isMax, runColor, me, currentTurn);
             }
             runLength=0;
             nullAfter = 0;
@@ -506,54 +508,4 @@ public class Player150402149 extends GomokuPlayer{
             return Color.black;
         }
     }
-    /*
-    public boolean CutOffTestHighlyOptimised(Color[][] state, int[] best, int depth, Color player){  //terminal or max depth
-
-        int count1 = 0;
-        int count2 = 0;
-
-        int[][][] leftToRightDiag = {{{0,3},{1,4},{2,5},{3,6},{4,7}},
-                {{0,2},{1,3},{2,4},{3,5},{4,6},{5,7}},
-                {{0,1},{1,2},{2,3},{3,4},{4,5},{5,6},{6,7}},
-                {{0,0},{1,1},{2,2},{3,3},{4,4},{5,5},{6,6},{7,7}}};
-
-        int[][][] rightToLeftDiag = {{{0,4},{1,3},{2,2}},
-                {{0,5},{1,4},{2,3}},
-                {{0,6},{1,5},{2,4},{3,3}},
-                {{0,7},{1,6},{2,5},{3,4}},
-                {{1,7}},
-                {{2,7}},
-                {{3,7}}};
-        int[] rightDiagSize = {5};
-
-
-        for(int i = 0 ; i < 8 ; i++ ){ //the verticle and horizontal
-            for(int j = 0 ; j < 8 ; j++){
-                if(state[i][j].equals(player)){
-                    count1++;
-                }else{
-                    count1 = 0;
-                }
-                if(state[j][i].equals(player)){
-                    count2++;
-                }else{
-                    count2 = 0;
-                }
-                if(count1 == 5 || count2 == 5){
-                    return true;
-                }
-            }
-        }
-        int y = 0;
-        count1 = 0;
-        count2 = 0;
-        for(int x = 0 ; x < 7 ; x++){ //the diagonals
-            for(y = 0 ; y < ){
-
-            }
-        }
-
-        return false;
-    }
-    */
 }
