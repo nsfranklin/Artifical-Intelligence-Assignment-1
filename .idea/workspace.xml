@@ -38,8 +38,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4707">
-              <caret line="62" column="60" selection-start-line="62" selection-start-column="60" selection-end-line="62" selection-end-column="60" />
+            <state relative-caret-position="-909">
+              <caret line="21" column="45" lean-forward="true" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#nextPlayer#0;class#Player150402149#0" />
@@ -51,7 +51,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="jar://C:/java libaries/gomoku.jar!/GomokuReferee.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2465">
+            <state relative-caret-position="2499">
               <caret line="167" selection-start-line="167" selection-end-line="167" />
             </state>
           </provider>
@@ -216,11 +216,12 @@
       <workItem from="1550601459161" duration="7135000" />
       <workItem from="1550655696588" duration="2624000" />
       <workItem from="1550670515309" duration="1975000" />
+      <workItem from="1550672763689" duration="7618000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="77656000" />
+    <option name="totallyTimeSpent" value="85274000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
@@ -256,7 +257,7 @@
       <window_info anchor="right" id="Palette&#9;" order="8" />
       <window_info anchor="right" id="Maven Projects" order="9" />
       <window_info anchor="right" x="92" y="92" width="1182" height="584" id="Byte Code Viewer" internal_type="FLOATING" order="10" type="FLOATING" />
-      <window_info anchor="right" id="Run" order="11" sideWeight="0.49933067" weight="0.30937973" />
+      <window_info anchor="right" id="Run" order="11" sideWeight="0.49933067" weight="0.31164902" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -267,13 +268,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Player150402149.java</url>
-          <line>186</line>
+          <line>185</line>
           <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Player150402149.java</url>
-          <line>482</line>
+          <line>498</line>
           <properties />
           <option name="timeStamp" value="2" />
         </line-breakpoint>
@@ -324,8 +325,8 @@
     <entry file="file://$PROJECT_DIR$/src/GomokuReferee2.java" />
     <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4707">
-          <caret line="62" column="60" selection-start-line="62" selection-start-column="60" selection-end-line="62" selection-end-column="60" />
+        <state relative-caret-position="-909">
+          <caret line="21" column="45" lean-forward="true" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#nextPlayer#0;class#Player150402149#0" />
@@ -335,7 +336,7 @@
     </entry>
     <entry file="jar://C:/java libaries/gomoku.jar!/GomokuReferee.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2465">
+        <state relative-caret-position="2499">
           <caret line="167" selection-start-line="167" selection-end-line="167" />
         </state>
       </provider>

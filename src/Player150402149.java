@@ -7,7 +7,7 @@ import static java.util.Collections.shuffle;
 
 @SuppressWarnings({"ManualArrayCopy", "unused"})
 class Player150402149 extends GomokuPlayer{
-    private int MAXDEPTH = 3;
+    private int MAXDEPTH = 7;
     private final int UTILITY = 2;
     private int finalStatesVisited;
     private final int[][][] leftToRightDiag =
@@ -48,12 +48,12 @@ class Player150402149 extends GomokuPlayer{
             if(actions.size() < 12){
                 MAXDEPTH = 11;
                 System.out.println("Max Depth Set to " + MAXDEPTH);
-            }else if(actions.size() < 58){
-                MAXDEPTH = 5;
+            }else if(actions.size() < 56){
+                MAXDEPTH = 7;
                 System.out.println("Max Depth Set to " + MAXDEPTH);
             }
             Integer[] MiniMaxResult = AlphaBetaMaxPlayer(board, Integer.MIN_VALUE, Integer.MAX_VALUE, MAXDEPTH, me);
-            System.out.println(me.toString() + MiniMaxResult[0]+","+MiniMaxResult[1]+","+MiniMaxResult[2]);
+            System.out.println(findColour(me)+ " " + MiniMaxResult[0]+","+MiniMaxResult[1]+","+MiniMaxResult[2]);
             System.out.println("Total Visited:" + finalStatesVisited+ " Time: " + (System.currentTimeMillis()-startTime));
 
             System.out.println();
@@ -182,16 +182,19 @@ class Player150402149 extends GomokuPlayer{
                 }
 
                 if (count1 >= 5 || count2 >= 5) {
-                    //System.out.println("found final h or z");
                     return true;
                 }
+                if(((7 - j + count1) < 5) && ((7 + count2 - j) < 5)){ //length of diag - y = number of spaces left. that plus count < 5 there aren't enough spaces left
+                    break;
+                }
             }
+            count1 = 0;
+            count2 = 0;
         }
-        int y = 0;
         count1 = 0;
         count2 = 0;
         for (int x = 0; x < 7; x++) { //the diagonals
-            for (y = 0; y < DiagSize[x]; y++) {
+            for (int y = 0; y < DiagSize[x]; y++) {
                 if (state[leftToRightDiag[x][y][0]][leftToRightDiag[x][y][1]] != null ) {
                     if (state[leftToRightDiag[x][y][0]][leftToRightDiag[x][y][1]].equals(player)) {
                         count1++;
@@ -216,7 +219,12 @@ class Player150402149 extends GomokuPlayer{
                     //System.out.println("Found final diag");
                     return true;
                 }
+                if(((DiagSize[x] - y + count1 -1) < 5) && ((DiagSize[x] + count2 - y -1) < 5)){ //length of diag - y = number of spaces left. that plus count < 5 there aren't enough spaces left
+                    break;
+                }
             }
+            count1 = 0;
+            count2 = 0;
         }
         return false;
     }
@@ -286,18 +294,17 @@ class Player150402149 extends GomokuPlayer{
                 break;
             case 3:
                 switch(openEnds){
-                    case 1: score =  100; //200;
+                    case 1: score =  100;
                         break;
-                    case 2: score =   20000; //250;
-                        //System.out.println("3 run 2 at each end");
+                    case 2: score =  20000;
                         break;
                 }
                 break;
             case 2:
                 switch(openEnds){
-                    case 1: score =  4;
+                    case 1: score =  2; //3
                         break;
-                    case 2: score =  6;
+                    case 2: score =  4; //4
                         break;
                 }
                 break;
@@ -477,6 +484,15 @@ class Player150402149 extends GomokuPlayer{
             nullBefore = 0;
         }
         return score;
+    }
+
+    public String findColour(Color c){
+        if(c.equals(Color.black)){
+            return "Black";
+        }
+        else{
+            return "White";
+        }
     }
 
     private Color[][] makeMove(Color[][] state, Integer[] move, Color player){
