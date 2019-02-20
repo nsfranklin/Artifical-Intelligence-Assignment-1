@@ -44,15 +44,23 @@ class Player150402149 extends GomokuPlayer{
         startTime = System.currentTimeMillis();
         finalStatesVisited = 0;
         try {
+            ArrayList<Integer[]> actions = populateActions(board);
+            if(actions.size() < 12){
+                MAXDEPTH = 11;
+                System.out.println("Max Depth Set to " + MAXDEPTH);
+            }else if(actions.size() < 58){
+                MAXDEPTH = 5;
+                System.out.println("Max Depth Set to " + MAXDEPTH);
+            }
             Integer[] MiniMaxResult = AlphaBetaMaxPlayer(board, Integer.MIN_VALUE, Integer.MAX_VALUE, MAXDEPTH, me);
             System.out.println(me.toString() + MiniMaxResult[0]+","+MiniMaxResult[1]+","+MiniMaxResult[2]);
             System.out.println("Total Visited:" + finalStatesVisited+ " Time: " + (System.currentTimeMillis()-startTime));
 
             System.out.println();
             if(MiniMaxResult[0] == null || MiniMaxResult[1] == null){
-                ArrayList<Integer[]> actions = populateActions(board);
-                shuffle(actions);
-                return(new Move(actions.get(0)[0], actions.get(0)[1]));
+                ArrayList<Integer[]> actions2 = populateActions(board);
+                shuffle(actions2);
+                return(new Move(actions2.get(0)[0], actions2.get(0)[1]));
             }
 
             return new Move(MiniMaxResult[0],MiniMaxResult[1]);
@@ -69,13 +77,6 @@ class Player150402149 extends GomokuPlayer{
         ArrayList<Integer[]> actionsAvailable = populateAvailableActions(state);
         //shuffle(actionsAvailable);
 
-
-        if(actionsAvailable.size() < 58){
-            MAXDEPTH = 6;
-        }else if(actionsAvailable.size() < 10){
-            MAXDEPTH = 10;
-        }
-
         if (CutOffTest(state, nextPlayerColor, depth, actionsAvailable)) {
             Integer[] returned = utilityFunctionMax(state, actionsAvailable, player, depth);
             return returned;
@@ -85,6 +86,7 @@ class Player150402149 extends GomokuPlayer{
 
         for (int i = 0 ; i < actionsAvailable.size() ; i++) {
             value = AlphaBetaMinPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min, max, depth - 1, nextPlayerColor);
+            value[2] = value[2] + actionsAvailable.size() - i*2; //this aims to increase priority to move near the center very slightly.
             if (value[UTILITY] > best[UTILITY]) {
                 best = new Integer[]{actionsAvailable.get(i)[0], actionsAvailable.get(i)[1], value[UTILITY]};
             }
@@ -113,6 +115,7 @@ class Player150402149 extends GomokuPlayer{
 
         for (int i = 0 ; i < actionsAvailable.size() ; i++) {
             value = AlphaBetaMaxPlayer(makeMove(state, actionsAvailable.get(i), nextPlayerColor), min, max, depth - 1, nextPlayerColor);
+            value[2] = value[2] - actionsAvailable.size() + i*2; //reduces corner priority
 
             if (value[UTILITY] < best[UTILITY]) {
                 best = new Integer[]{actionsAvailable.get(i)[0], actionsAvailable.get(i)[1], value[UTILITY]};
@@ -149,7 +152,7 @@ class Player150402149 extends GomokuPlayer{
     }
 
     private boolean CutOffTest(Color[][] state, Color player, int depth, ArrayList<Integer[]> a){  //terminal or max depth
-    if(depth == 0 || a.size()==64 || System.currentTimeMillis()-startTime > 9950){
+    if(depth == 0 || a.size()==64 || System.currentTimeMillis()-startTime > 9980){
         return true;
     }
 
@@ -268,24 +271,24 @@ class Player150402149 extends GomokuPlayer{
             case 4:
                 if(runColor.equals(me)) {
                     switch (openEnds) {
-                        case 1: score = 10000;
+                        case 1: score = 100000;
                             break;
-                        case 2: score = 200000;
+                        case 2: score = 2000000;
                     }
                 }else{
                     switch (openEnds){
-                        case 1: score = 10000;
+                        case 1: score = 100000;
                             break;
-                        case 2: score = 200000;
+                        case 2: score = 2000000;
                             break;
                     }
                 }
                 break;
             case 3:
                 switch(openEnds){
-                    case 1: score =  2500;
+                    case 1: score =  100; //200;
                         break;
-                    case 2: score =  2500;
+                    case 2: score =   20000; //250;
                         //System.out.println("3 run 2 at each end");
                         break;
                 }
@@ -294,7 +297,7 @@ class Player150402149 extends GomokuPlayer{
                 switch(openEnds){
                     case 1: score =  4;
                         break;
-                    case 2: score =  10;
+                    case 2: score =  6;
                         break;
                 }
                 break;
