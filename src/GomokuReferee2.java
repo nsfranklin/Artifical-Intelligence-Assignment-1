@@ -175,7 +175,7 @@ public class GomokuReferee2 extends Frame implements Runnable {
             double var9 = (double)(var4 - var2) / 1.0E9D;
             String var6;
             if (var9 > timeLimit) {
-                this.b.makeMove((Move)null, var7);
+                this.b.makeMove(null, var7);
                 var6 = "Time limit exceeded";
             } else {
                 var6 = this.b.makeMove(var1, var7);
@@ -329,7 +329,7 @@ public class GomokuReferee2 extends Frame implements Runnable {
                                         referee.playThread.resume();
                                     } else {
                                         referee.playThread.stop();
-                                        referee.b.makeMove((Move)null, referee.b.getTurn());
+                                        referee.b.makeMove(null, referee.b.getTurn());
                                         System.out.println("Time limit exceeded\n" + colorToString(referee.b.getWinner()) + " WINS");
                                     }
                                 } else {
