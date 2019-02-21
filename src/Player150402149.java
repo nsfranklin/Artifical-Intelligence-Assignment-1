@@ -155,7 +155,7 @@ class Player150402149 extends GomokuPlayer{
                 switch (openEnds) {
                     case 1:
                         if (runColor.equals(me)) {
-                            score = 200000;
+                            score = 2000;
                         } else {
                             score = 2000000;
                         }
@@ -173,7 +173,7 @@ class Player150402149 extends GomokuPlayer{
                 switch(openEnds){
                     case 1: score =  100;
                         break;
-                    case 2: score =  2000;
+                    case 2: score =  200;
                         break;
                 }
                 break;
@@ -197,10 +197,10 @@ class Player150402149 extends GomokuPlayer{
                 break;
         }
 
-        if(runColor.equals(me)){
-            return score*-1;
+        if(isMax){
+            return score;
         }
-        return score;
+        return score*-1;
     }
 
     private boolean CutOffTest(Color[][] state, int depth, ArrayList<Integer[]> a){  //terminal or max depth

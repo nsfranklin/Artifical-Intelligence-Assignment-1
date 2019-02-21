@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3879018-40e2-452d-a237-7591348c2642" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/out/production/Artifical Intelligence Assignment 1/Player150402149.class" afterPath="$PROJECT_DIR$/out/production/Artifical Intelligence Assignment 1/Player150402149.class" />
       <change beforePath="$PROJECT_DIR$/src/Player150402149.java" afterPath="$PROJECT_DIR$/src/Player150402149.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -39,8 +37,8 @@
       <file leaf-file-name="Player150402149.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="356" column="94" lean-forward="false" selection-start-line="356" selection-start-column="94" selection-end-line="356" selection-end-column="94" />
+            <state relative-caret-position="4242">
+              <caret line="202" column="23" lean-forward="false" selection-start-line="202" selection-start-column="23" selection-end-line="202" selection-end-column="23" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#87#140#1" expanded="true" />
@@ -58,7 +56,7 @@
       <file leaf-file-name="Player150402149_2.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Player150402149_2.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4861">
+            <state relative-caret-position="6489">
               <caret line="313" column="18" lean-forward="false" selection-start-line="313" selection-start-column="18" selection-end-line="313" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -141,10 +139,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="AndroidView" />
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -179,6 +176,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -389,6 +387,35 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Player150402149_2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6489">
+          <caret line="313" column="18" lean-forward="false" selection-start-line="313" selection-start-column="18" selection-end-line="313" selection-end-column="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#findColour#0;class#Player150402149_2#0" expanded="false" />
+            <element signature="method#nextPlayer#0;class#Player150402149_2#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#87#140#1" expanded="true" />
+            <element signature="method#populateAvailableActions#0;class#Player150402149#0" expanded="false" />
+            <element signature="method#populateActions#0;class#Player150402149#0" expanded="false" />
+            <element signature="method#findHorizontalAndVerticle#0;class#Player150402149#0" expanded="false" />
+            <element signature="method#findColour#0;class#Player150402149#0" expanded="false" />
+            <element signature="method#makeMove#0;class#Player150402149#0" expanded="false" />
+            <element signature="method#nextPlayer#0;class#Player150402149#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -497,7 +524,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Player150402149_2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4861">
+        <state relative-caret-position="6489">
           <caret line="313" column="18" lean-forward="false" selection-start-line="313" selection-start-column="18" selection-end-line="313" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -509,8 +536,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Player150402149.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="356" column="94" lean-forward="false" selection-start-line="356" selection-start-column="94" selection-end-line="356" selection-end-column="94" />
+        <state relative-caret-position="4242">
+          <caret line="202" column="23" lean-forward="false" selection-start-line="202" selection-start-column="23" selection-end-line="202" selection-end-column="23" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#87#140#1" expanded="true" />
